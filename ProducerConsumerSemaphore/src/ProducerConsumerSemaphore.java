@@ -34,7 +34,7 @@ public class ProducerConsumerSemaphore {
 
             System.out.println("Producer produced: " + data);
 
-            if (buffer.size() == 1){
+            if (buffer.size() >= 1){
                 semConsumer.release();
             }
         }
