@@ -14,13 +14,16 @@ public class ProducerConsumerSemaphore {
     static Semaphore semConsumer = new Semaphore(0);
     static Semaphore semProducer = new Semaphore(1);
     static LinkedList<Integer> buffer = new LinkedList<Integer>();
+    static final int border = 5;
 
     void produce() throws InterruptedException {
         while(true){
             Thread.sleep(1000);
 
             try {
-                semProducer.acquire();
+                if (buffer.size() == border){
+                    semProducer.acquire();
+                }
             }
             catch (InterruptedException ex) {
                 System.out.println("An error occured:"+ex.getMessage());
@@ -31,7 +34,9 @@ public class ProducerConsumerSemaphore {
 
             System.out.println("Producer produced: " + data);
 
-            semConsumer.release();
+            if (buffer.size() == 1){
+                semConsumer.release();
+            }
         }
     }
 
@@ -39,7 +44,9 @@ public class ProducerConsumerSemaphore {
         while(true){
 
             try {
-                semConsumer.acquire();
+                if (buffer.size() == 0){
+                    semConsumer.acquire();
+                }
             }
             catch (InterruptedException ex) {
                 System.out.println("An error occured:"+ex.getMessage());
@@ -48,7 +55,9 @@ public class ProducerConsumerSemaphore {
             System.out.println("Consumer consumed: " + buffer.getLast());
             buffer.remove(buffer.size() - 1);
 
-            semProducer.release();
+            if (buffer.size() == border - 1){
+                semProducer.release();
+            }
             Thread.sleep(1000);
         }
     }
